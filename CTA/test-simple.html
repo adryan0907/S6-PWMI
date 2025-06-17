@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CTA Test - Simple Version</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #9D82AC 0%, #FF7F4A 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        
+        .test-container {
+            text-align: center;
+            padding: 50px;
+        }
+        
+        #video, #canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            object-fit: cover;
+            transform: scaleX(-1);
+        }
+        
+        #video {
+            opacity: 0;
+        }
+        
+        #canvas {
+            opacity: 0.4;
+        }
+        
+        .status {
+            background: rgba(0,0,0,0.5);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .hand-indicator {
+            width: 100px;
+            height: 100px;
+            border: 4px solid #FF7F4A;
+            border-radius: 50%;
+            margin: 20px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>CTA Hand Detection Test</h1>
+        <div class="status" id="status">Initializing...</div>
+        <div class="hand-indicator" id="handIndicator">👋</div>
+        <p>This is a simplified test version to debug hand detection.</p>
+        <p>Check the browser console (F12) for detailed logs.</p>
+    </div>
+
+    <!-- Video and Canvas for hand tracking -->
+    <video id="video" autoplay playsinline></video>
+    <canvas id="canvas"></canvas>
+
+    <!-- TensorFlow and BodyPix -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.11.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/body-pix@2.2.0"></script>
+    <!-- MediaPipe Hands -->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
+
+    <script>
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const status = document.getElementById('status');
+        const handIndicator = document.getElementById('handIndicator');
+
+        function updateStatus(message) {
+            status.textContent = message;
+            console.log('Status:', message);
+        }
+
+        async function testCamera() {
+            try {
+                updateStatus('Requesting camera access...');
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    video: { width: 640, height: 480, facingMode: 'user' }
+                });
+                video.srcObject = stream;
+                updateStatus('Camera access granted');
+                
+                return new Promise(resolve => {
+                    video.onloadedmetadata = () => {
+                        updateStatus('Video loaded, setting up canvas...');
+                        canvas.width = video.videoWidth;
+                        canvas.height = video.videoHeight;
+                        resolve();
+                    };
+                });
+            } catch (error) {
+                updateStatus('Camera access failed: ' + error.message);
+                throw error;
+            }
+        }
+
+        async function testBodyPix() {
+            try {
+                updateStatus('Loading BodyPix model...');
+                const bodyPixNet = await bodyPix.load({
+                    architecture: 'MobileNetV1',
+                    outputStride: 16,
+                    multiplier: 0.75,
+                    quantBytes: 2
+                });
+                updateStatus('BodyPix model loaded successfully');
+                return bodyPixNet;
+            } catch (error) {
+                updateStatus('BodyPix loading failed: ' + error.message);
+                throw error;
+            }
+        }
+
+        async function testHands() {
+            try {
+                updateStatus('Setting up MediaPipe Hands...');
+                const hands = new Hands({
+                    locateFile: file => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
+                });
+
+                hands.setOptions({
+                    maxNumHands: 1,
+                    modelComplexity: 1,
+                    minDetectionConfidence: 0.7,
+                    minTrackingConfidence: 0.7
+                });
+
+                hands.onResults(results => {
+                    if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
+                        handIndicator.style.backgroundColor = '#4CAF50';
+                        handIndicator.textContent = '✓';
+                        updateStatus('Hand detected! System working correctly.');
+                    } else {
+                        handIndicator.style.backgroundColor = 'transparent';
+                        handIndicator.textContent = '👋';
+                    }
+                });
+
+                updateStatus('MediaPipe Hands configured, starting detection...');
+                return hands;
+            } catch (error) {
+                updateStatus('MediaPipe Hands setup failed: ' + error.message);
+                throw error;
+            }
+        }
+
+        async function startTest() {
+            try {
+                await testCamera();
+                video.play();
+                
+                const bodyPixNet = await testBodyPix();
+                const hands = await testHands();
+                
+                updateStatus('All systems ready! Wave your hand to test.');
+
+                async function render() {
+                    try {
+                        // Create person segmentation
+                        const segmentation = await bodyPixNet.segmentPerson(video, {
+                            internalResolution: 'medium',
+                            segmentationThreshold: 0.7
+                        });
+
+                        // Create silhouette mask
+                        const mask = bodyPix.toMask(
+                            segmentation,
+                            { r: 255, g: 255, b: 255, a: 120 },
+                            { r: 0, g: 0, b: 0, a: 0 }
+                        );
+
+                        ctx.clearRect(0, 0, canvas.width, canvas.height);
+                        ctx.putImageData(mask, 0, 0);
+                        
+                        // Send frame to hand detection
+                        await hands.send({ image: video });
+                    } catch (error) {
+                        console.error('Render error:', error);
+                    }
+
+                    requestAnimationFrame(render);
+                }
+
+                render();
+            } catch (error) {
+                updateStatus('Test failed: ' + error.message);
+                console.error('Test error:', error);
+            }
+        }
+
+        // Start the test when page loads
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', startTest);
+        } else {
+            startTest();
+        }
+    </script>
+</body>
+</html> 

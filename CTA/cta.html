@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Woensel Zuid Ontdekking - PWMI Digital Screen</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tenorite:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <!-- TensorFlow and BodyPix -->
+        <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.11.0"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/body-pix@2.2.0"></script>
+    <!-- MediaPipe Hands -->
+        <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"></script>
+    <!-- CTA Hand Detection -->
+        <script src="./cta-hand-detection.js" defer></script>
+    </head>
+<body>
+    <div class="screenElement">
+        <!-- Header Section -->
+        <div class="header-section">
+            <div class="logo-section">
+                <div class="pwmi-logo">
+                    <div class="logo-circle circle-1"></div>
+                    <div class="logo-circle circle-2"></div>
+                    <div class="logo-circle circle-3"></div>
+                    <div class="logo-circle circle-4"></div>
+                    <div class="logo-circle circle-5"></div>
+                    <div class="logo-text">PWMI</div>
+                </div>
+                <div class="title-with-location">
+                    <div class="location-icon-header">
+                        <svg class="icon-location" viewBox="0 0 24 24" fill="none">
+                            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" fill="currentColor"/>
+                        </svg>
+                    </div>
+                    <div class="tournament-title">Woensel Zuid Voetbaltoernooi</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content - Vertical Layout -->
+        <div class="poster-content">
+            <!-- Top Section with Logo Integration -->
+            <div class="top-section">
+                <div class="decorative-elements">
+                    <div class="floating-shapes">
+                        <div class="shape shape-1"></div>
+                        <div class="shape shape-2"></div>
+                        <div class="shape shape-3"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Title Section -->
+            <div class="main-title-section">
+                <div class="title-container">
+                    <h1 class="main-title">VOETBAL</h1>
+                    <h2 class="subtitle">TOERNOOI 2024</h2>
+                    <div class="tournament-date">15-16 JUNI • GRATIS DEELNAME</div>
+                    <div class="title-accent"></div>
+                </div>
+                <div class="football-players-image">
+                    <img src="./ai-generated-flat-design-group-of-man-football-players-png.webp" alt="Football Players" class="players-img">
+                </div>
+            </div>
+
+            <!-- Interactive Call to Action -->
+            <div class="interaction-section">
+                <div class="hand-detection-area">
+                    <div class="hand-icon-large">
+                        <svg class="icon-hand" viewBox="0 0 24 24" fill="none">
+                            <path d="M18 24h-6c-1.1 0-2-.9-2-2v-6c0-1.1.9-2 2-2h6c1.1 0 2 .9 2 2v6c0 1.1-.9 2-2 2z" fill="currentColor"/>
+                            <path d="M8 14v-4c0-1.1.9-2 2-2s2 .9 2 2v4M6 16v-6c0-1.1.9-2 2-2s2 .9 2 2v6M4 18v-8c0-1.1.9-2 2-2s2 .9 2 2v8M14 12V6c0-2.2-1.8-4-4-4S6 3.8 6 6v6" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                        </svg>
+                    </div>
+                    <div class="interaction-text">
+                        <h3 class="cta-title">Beweeg je hand</h3>
+                        <p class="cta-subtitle">om je aan te melden</p>
+                        <p class="cta-english">Move your hand to register</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Feature Cards -->
+            <div class="feature-section">
+                <div class="feature-grid">
+                    <div class="feature-card card-primary">
+                        <div class="card-content">
+                            <div class="card-header">
+                                <div class="location-icon-card">
+                                    <svg class="icon-football" viewBox="0 0 24 24" fill="none">
+                                        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"/>
+                                        <path d="M12 2l3 6h6l-5 4 2 6-6-4-6 4 2-6-5-4h6z" fill="currentColor"/>
+                                    </svg>
+                                </div>
+                                <h4 class="card-title">Teams Welkom</h4>
+                            </div>
+                            <p class="card-description">Alle leeftijden en niveaus welkom. Vorm een team met vrienden of familie!</p>
+                            <button class="card-button btn-primary">Aanmelden</button>
+                        </div>
+                    </div>
+                    <div class="feature-card card-secondary">
+                        <div class="card-content">
+                            <div class="card-header">
+                                <div class="location-icon-card">
+                                    <svg class="icon-trophy" viewBox="0 0 24 24" fill="none">
+                                        <path d="M7 4V2C7 1.45 7.45 1 8 1H16C16.55 1 17 1.45 17 2V4H20C20.55 4 21 4.45 21 5S20.55 6 20 6H19V7C19 10.31 16.31 13 13 13H11C7.69 13 5 10.31 5 7V6H4C3.45 6 3 5.55 3 5S3.45 4 4 4H7ZM9 3V4H15V3H9ZM17 6H7V7C7 9.21 8.79 11 11 11H13C15.21 11 17 9.21 17 7V6Z" fill="currentColor"/>
+                                        <path d="M12 15C10.9 15 10 15.9 10 17V21C10 22.1 10.9 23 12 23S14 22.1 14 21V17C14 15.9 13.1 15 12 15Z" fill="currentColor"/>
+                                    </svg>
+                                </div>
+                                <h4 class="card-title">Prijzen</h4>
+                            </div>
+                            <p class="card-description">Geweldige prijzen voor winnaars! Trofeeën, medailles en lokale cadeaubonnen.</p>
+                            <button class="card-button btn-secondary">Prijzen</button>
+                        </div>
+                    </div>
+                    <div class="feature-card card-accent">
+                        <div class="card-content">
+                            <div class="card-header">
+                                <div class="location-icon-card">
+                                    <svg class="icon-location-pin" viewBox="0 0 24 24" fill="none">
+                                        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" fill="currentColor"/>
+                                    </svg>
+                                </div>
+                                <h4 class="card-title">Locatie</h4>
+                            </div>
+                            <p class="card-description">Sportpark Woensel Zuid • Gratis parkeren • Openbaar vervoer nabij</p>
+                            <button class="card-button btn-accent">Route</button>
+                        </div>
+                    </div>
+                    <div class="feature-card card-neutral">
+                        <div class="card-content">
+                            <div class="card-header">
+                                <div class="location-icon-card">
+                                    <svg class="icon-food" viewBox="0 0 24 24" fill="none">
+                                        <path d="M8.1 13.34l2.83-2.83L3.91 3.5c-.78-.78-2.05-.78-2.83 0s-.78 2.05 0 2.83l7.02 7.01zm6.78-1.81c1.53.71 3.68.21 5.27-1.38 1.91-1.91 2.28-4.65.81-6.12-1.46-1.46-4.2-1.1-6.12.81-1.59 1.59-2.09 3.74-1.38 5.27L3.7 19.87l1.41 1.41L12 14.41l6.88 6.88 1.41-1.41L14.89 11.53z" fill="currentColor"/>
+                                    </svg>
+                                </div>
+                                <h4 class="card-title">Eten & Drinken</h4>
+                            </div>
+                            <p class="card-description">Food trucks, drankjes en snacks beschikbaar tijdens het toernooi!</p>
+                            <button class="card-button btn-neutral">Menu</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Section -->
+            <div class="bottom-section">
+                <div class="info-text">
+                    <p>Gratis deelname • Alle leeftijden welkom • Sportpark Woensel Zuid</p>
+                </div>
+                <div class="qr-section">
+                    <div class="qr-code">
+                        <div class="qr-pattern">
+                            <div class="qr-square"></div>
+                            <div class="qr-square"></div>
+                            <div class="qr-square"></div>
+                            <div class="qr-square"></div>
+                            <div class="qr-square"></div>
+                            <div class="qr-square"></div>
+                            <div class="qr-square"></div>
+                            <div class="qr-square"></div>
+                            <div class="qr-square"></div>
+                        </div>
+                    </div>
+                    <p class="qr-text">Aanmelden</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Language Selection Overlay -->
+        <div class="language-overlay" id="languageOverlay">
+            <div class="language-selection">
+                <h2 class="language-title">Kies je taal / Choose your language</h2>
+                <div class="language-buttons">
+                    <button class="language-button hoverButton" data-id="nl" data-lang="dutch">
+                        <img src="../IMG/Dutch.png" alt="Nederlands" class="flag-icon">
+                        <span>Nederlands</span>
+                    </button>
+                    <button class="language-button hoverButton" data-id="en" data-lang="english">
+                        <img src="../IMG/English.png" alt="English" class="flag-icon">
+                        <span>English</span>
+                    </button>
+                    <button class="language-button hoverButton" data-id="ar" data-lang="arabic">
+                        <img src="../IMG/Arabic.png" alt="العربية" class="flag-icon">
+                        <span>العربية</span>
+                    </button>
+                </div>
+                <p class="interaction-instruction">Houd je hand boven een taal om te selecteren<br>Hold your hand over a language to select</p>
+            </div>
+        </div>
+
+        <!-- Video and Canvas for hand tracking -->
+        <video id="video" autoplay playsinline></video>
+        <canvas id="canvas"></canvas>
+    </div>
+</body>
+</html>
